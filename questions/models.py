@@ -5,6 +5,7 @@ from django.db import models
 class Question(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated= models.DateTimeField(auto_now=True)
+    question_num = models.PositiveIntegerField(editable=False)
     question = models.TextField(max_length=500,blank=False)
     opt_a = models.CharField(max_length=255,blank=False)
     opt_b = models.CharField(max_length=255,blank=False)

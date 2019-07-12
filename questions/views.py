@@ -14,23 +14,25 @@ def question_add(request):
     template='questions/add.html'
 
     form=QuestionAddForm(request.POST or None)
+    if Info.objects.filter(identifier=1).exists():
+        pass
+    else:
+        Info.objects.create()
+
+    info = get_object_or_404(Info, identifier=1)
 
     if form.is_valid():
         question = form.save(commit=False)
-        if Info.objects.filter(identifier=1).exists():
-            pass
-        else:
-            Info.objects.create()
-
-        info = get_object_or_404(Info, identifier=1)
-        info.total_questions += 1
-        info.save()
+        question.question_num=info.total_questions+1
         question.save()
+        info.total_questions = question.question_num
+        info.save()
         return redirect('add')
 
     context={
             'title':'add',
             'form': form,
+            'info': info
             }
 
     return render(request,template,context)
