@@ -81,6 +81,7 @@ def answer(request):
     
     if getattr(info, "last_answered_"+category) == 0:
         question = get_first_question(category)
+        old_question = None
     else:
         category_last_answered_question_num = getattr(info, "last_answered_"+category)
         last_answered = Question.objects.get(question_num=category_last_answered_question_num, category=category)
@@ -101,6 +102,9 @@ def answer(request):
             category_iteration_num += 1
             info.save()
             return redirect('home')
+    
+    if 'last_answered' in locals():
+        old_question = last_answered
 
     if request.method == 'POST':
         answered_num = request.POST['answer']
@@ -127,6 +131,7 @@ def answer(request):
     context={
             'title':'answer',
             'question': question,
+            'old_question': old_question,
             'info': info
             }
 
