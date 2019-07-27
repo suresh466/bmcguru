@@ -61,8 +61,16 @@ def get_correct_answer(answer_num,question):
         answer = question.opt_b
     elif answer_num == 'c':
         answer = question.opt_c
-    else:
+    elif answer_num == 'd':
         answer = question.opt_d
+    elif answer_num == 'e':
+        answer = question.opt_e
+    elif answer_num == 'f':
+        answer = question.opt_f
+
+
+    else:
+        answer = "<< You entered option that was out of scope!!!"
     return answer
 
 def answer(request):
@@ -77,7 +85,7 @@ def answer(request):
         question = get_first_question(category)
     else:
         category_last_answered_question_num = getattr(info, "last_answered_"+category)
-        last_answered = Question.objects.get(question_num=category_last_answered_question_num)
+        last_answered = Question.objects.get(question_num=category_last_answered_question_num, category=category)
         if getattr(info, "iteration_num_"+category) == MAX_ITERATIONS:
             messages.warning(request,
                     "You have done max iterations of this question set, please update max_iterations if you want to keep going.")
