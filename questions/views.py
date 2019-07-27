@@ -71,11 +71,11 @@ def answer(request):
     if category == "":
         category = "computer_misc"
     
-    if getattr(info, "iteration_num_"+category) == 0:
+    if getattr(info, "last_answered_"+category) == 0:
         question = get_first_question(category)
     else:
-        category_last_answered_pk = getattr(info, "last_answered_"+category)
-        last_answered = Question.objects.get(pk=category_last_answered_pk)
+        category_last_answered_question_num = getattr(info, "last_answered_"+category)
+        last_answered = Question.objects.get(question_num=category_last_answered_question_num)
         if getattr(info, "iteration_num_"+category) == MAX_ITERATIONS:
             messages.warning(request,
                     "You have done max iterations of this question set, please update max_iterations if you want to keep going.")
@@ -112,7 +112,7 @@ def answer(request):
                     "The correct answer was {}: {}. but you selected {}. Good luck for this one."
                     .format(answer_num,answer,answered_num))
         question.save()
-        setattr(info,"last_answered_"+category, question.pk)
+        setattr(info,"last_answered_"+category, question.question_num)
         info.save()
         return redirect(category)
 
