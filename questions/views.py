@@ -26,6 +26,8 @@ def question_add(request):
         question.question_num=info.total_questions+1
         question.save()
         info.total_questions = question.question_num
+        category_total_questions = getattr(info, "total_questions_"+question.category)
+        category_total_questions += 1
         info.save()
         return redirect('add')
 
@@ -59,8 +61,14 @@ def get_correct_answer(answer_num,question):
         answer = question.opt_b
     elif answer_num == 'c':
         answer = question.opt_c
-    else:
+    elif answer_num == 'd':
         answer = question.opt_d
+    elif answer_num == 'e':
+        answer = question.opt_e
+    elif answer_num == 'f':
+        answer = question.opt_f
+    else:
+        answer = "<< You entered option that was out of scope!!!"
     return answer
 
 def answer(request):
@@ -71,11 +79,11 @@ def answer(request):
     if category == "":
         category = "computer_misc"
     
-    if getattr(info, "iteration_num_"+category) == 0:
+    if getattr(info, "last_answered_"+category) == 0:
         question = get_first_question(category)
     else:
-        category_last_answered_pk = getattr(info, "last_answered_"+category)
-        last_answered = Question.objects.get(pk=category_last_answered_pk)
+        category_last_answered_question_num = getattr(info, "last_answered_"+category)
+        last_answered = Question.objects.get(question_num=category_last_answered_question_num, category=category)
         if getattr(info, "iteration_num_"+category) == MAX_ITERATIONS:
             messages.warning(request,
                     "You have done max iterations of this question set, please update max_iterations if you want to keep going.")
@@ -112,7 +120,7 @@ def answer(request):
                     "The correct answer was {}: {}. but you selected {}. Good luck for this one."
                     .format(answer_num,answer,answered_num))
         question.save()
-        setattr(info,"last_answered_"+category, question.pk)
+        setattr(info,"last_answered_"+category, question.question_num)
         info.save()
         return redirect(category)
 
