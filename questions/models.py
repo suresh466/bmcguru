@@ -34,6 +34,15 @@ class Question(models.Model):
     opt_e = models.CharField(max_length=255, blank=True, default="-null-")
     opt_f = models.CharField(max_length=255, blank=True, default="-null-")
     # hint = models.CharField(max_length=500,blank=True)
+    right_count = models.PositiveIntegerField(
+            default=0,blank=False,editable=False)
+    wrong_count = models.PositiveIntegerField(
+            default=0,blank=False,editable=False)
+    total_right_count = models.PositiveIntegerField(
+            default=0,blank=False,editable=False)
+    total_wrong_count = models.PositiveIntegerField(
+            default=0,blank=False,editable=False)
+
 
     def __str__(self):
         return str(self.question_num)
