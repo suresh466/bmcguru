@@ -113,7 +113,7 @@ def answer(request):
         question.save()
         setattr(Info,"last_answered_"+category, question.pk)
         info.save()
-        return redirect('home')
+        return redirect(category)
 
     context={
             'title':'answer',
