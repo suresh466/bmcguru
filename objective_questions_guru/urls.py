@@ -21,6 +21,12 @@ from questions.views import question_add,answer
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', answer, name='home'),
+    path('uncategorized', answer, name='uncategorized'),
+    path('excel', answer, name='excel'),
+    path('word', answer, name='word'),
+    path('powerpoint', answer, name='powerpoint'),
+    path('operating_system', answer, name='operating_system'),
+    path('computer_misc', answer, name='computer_system'),
     path('add', question_add, name='add'),
     path('about/', about, name='about'),
     path('contact/', contact, name='contact'),
