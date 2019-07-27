@@ -71,11 +71,12 @@ def answer(request):
     if category == "":
         category = "computer_misc"
     
-    if getattr(Info, "last_answered_"+category) == 0:
+    if getattr(info, "iteration_num_"+category) == 0:
         question = get_first_question(category)
     else:
-        last_answered = Question.objects.get(pk=getattr(Info, "last_answered_"+category))
-        if getattr(Info, "iteration_num_"+category) == MAX_ITERATIONS:
+        category_last_answered_pk = getattr(info, "last_answered_"+category)
+        last_answered = Question.objects.get(pk=category_last_answered_pk)
+        if getattr(info, "iteration_num_"+category) == MAX_ITERATIONS:
             messages.warning(request,
                     "You have done max iterations of this question set, please update max_iterations if you want to keep going.")
             return redirect("about")
@@ -85,10 +86,10 @@ def answer(request):
             deleted = Question.objects.filter(category=category, right_count=MAX_RIGHT_COUNT).delete()
             sort(category)
             info.total_questions -= deleted[0]
-            category_total_questions = getattr(Info, "total_questions_"+category)
+            category_total_questions = getattr(info, "total_questions_"+category)
             category_total_questions -= deleted[0]
-            setattr(Info, "last_answered_"+category, 0)
-            category_iteration_num = getattr(Info, "iteration_num_"+category)
+            setattr(info, "last_answered_"+category, 0)
+            category_iteration_num = getattr(info, "iteration_num_"+category)
             category_iteration_num += 1
             info.save()
             return redirect('home')
@@ -111,7 +112,7 @@ def answer(request):
                     "The correct answer was {}: {}. but you selected {}. Good luck for this one."
                     .format(answer_num,answer,answered_num))
         question.save()
-        setattr(Info,"last_answered_"+category, question.pk)
+        setattr(info,"last_answered_"+category, question.pk)
         info.save()
         return redirect(category)
 
