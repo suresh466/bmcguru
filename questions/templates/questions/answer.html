@@ -24,11 +24,6 @@
 <p>b. {{question.opt_b}}</p>
 <p>c. {{question.opt_c}}</p>
 <p>d. {{question.opt_d}}</p>
-{% if question.hint %}
-<p>Hint: {{question.hint}}</p>
-{% else %}
-<p> No hint for this question available</p>
-{% endif %}
 
 <form method="POST">
   {% csrf_token %}
