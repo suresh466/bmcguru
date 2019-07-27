@@ -26,6 +26,8 @@ def question_add(request):
         question.question_num=info.total_questions+1
         question.save()
         info.total_questions = question.question_num
+        category_total_questions = getattr(info, "total_questions_"+question.category)
+        category_total_questions += 1
         info.save()
         return redirect('add')
 
