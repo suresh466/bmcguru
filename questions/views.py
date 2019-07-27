@@ -37,15 +37,15 @@ def question_add(request):
 
     return render(request,template,context)
 
-def sort():
+def sort(category):
     for wrong_count in reversed(range(0,MAX_WRONG_COUNT+1)):
-        queryset = Question.objects.filter(wrong_count=wrong_count)
+        queryset = Question.objects.filter(category=category,wrong_count=wrong_count)
         for query in queryset:
             query.date_created=timezone.now()
             query.save()
 
-def get_first_question():
-    queryset = Question.objects.all()
+def get_first_question(category):
+    queryset = Question.objects.filter(category=category)
     min_time = queryset.first().date_created
     for query in queryset:
         if query.date_created<min_time:
@@ -56,7 +56,7 @@ def get_correct_answer(answer_num,question):
     if answer_num == 'a':
         answer = question.opt_a
     elif answer_num == 'b':
-        answer = questin.opt_b
+        answer = question.opt_b
     elif answer_num == 'c':
         answer = question.opt_c
     else:
@@ -67,23 +67,29 @@ def answer(request):
     template='questions/answer.html'
     
     info = get_object_or_404(Info, identifier=1)
+    category = request.path_info.replace("/","").replace("answer","")
+    if category == "":
+        category = "computer_misc"
     
-    if info.last_answered == 0:
-        question = get_first_question()
+    if getattr(Info, "last_answered_"+category) == 0:
+        question = get_first_question(category)
     else:
-        last_answered = Question.objects.get(pk=info.last_answered)
-        if info.iteration_num == MAX_ITERATIONS:
+        last_answered = Question.objects.get(pk=getattr(Info, "last_answered_"+category))
+        if getattr(Info, "iteration_num_"+category) == MAX_ITERATIONS:
             messages.warning(request,
                     "You have done max iterations of this question set, please update max_iterations if you want to keep going.")
-            return redirect('about')
+            return redirect("about")
         try:
             question = last_answered.get_next_by_date_created()
         except ObjectDoesNotExist:
-            deleted = Question.objects.filter(right_count=MAX_RIGHT_COUNT).delete()
-            sort()
+            deleted = Question.objects.filter(category=category, right_count=MAX_RIGHT_COUNT).delete()
+            sort(category)
             info.total_questions -= deleted[0]
-            info.last_answered = 0
-            info.iteration_num += 1
+            category_total_questions = getattr(Info, "total_questions_"+category)
+            category_total_questions -= deleted[0]
+            setattr(Info, "last_answered_"+category, 0)
+            category_iteration_num = getattr(Info, "iteration_num_"+category)
+            category_iteration_num += 1
             info.save()
             return redirect('home')
 
@@ -95,18 +101,17 @@ def answer(request):
         if answered_num == question.answer:
             question.right_count += 1
             question.total_right_count += 1
-            question.save()
             messages.success(request,
                     "Congratulations, correct answer is {}: {}."
                     .format(answer_num,answer))
         else:
             question.wrong_count += 1
             question.total_wrong_count += 1
-            question.save()
             messages.warning(request,
                     "The correct answer was {}: {}. but you selected {}. Good luck for this one."
                     .format(answer_num,answer,answered_num))
-        info.last_answered = question.pk
+        question.save()
+        setattr(Info,"last_answered_"+category, question.pk)
         info.save()
         return redirect('home')
 
