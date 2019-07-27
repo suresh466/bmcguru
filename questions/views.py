@@ -67,8 +67,6 @@ def get_correct_answer(answer_num,question):
         answer = question.opt_e
     elif answer_num == 'f':
         answer = question.opt_f
-
-
     else:
         answer = "<< You entered option that was out of scope!!!"
     return answer
