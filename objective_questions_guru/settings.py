@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'objective_questions_guru.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'gurupsc',
-        'USER': 'gurupsc',
-        'PASSWORD': 'gurupsc',
+        'NAME': 'guru_og_sort',
+        'USER': 'guru',
+        'PASSWORD': 'guru',
         'HOST': 'localhost',
         'PORT': '5432',
     }
