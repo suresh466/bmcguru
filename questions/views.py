@@ -90,7 +90,7 @@ def answer(request):
                     "You have done max iterations of this question set, please update max_iterations if you want to keep going.")
             return redirect("about")
         try:
-            question = last_answered.get_next_by_date_created()
+            question = last_answered.get_next_by_date_created(category=category)
         except ObjectDoesNotExist:
             deleted = Question.objects.filter(category=category, right_count=MAX_RIGHT_COUNT).delete()
             sort(category)
