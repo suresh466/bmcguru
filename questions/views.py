@@ -28,6 +28,7 @@ def question_add(request):
         info.total_questions = question.question_num
         category_total_questions = getattr(info, "total_questions_"+question.category)
         category_total_questions += 1
+        setattr(info, "total_questions_"+question.category, category_total_questions)
         info.save()
         return redirect('add')
 
@@ -93,15 +94,21 @@ def answer(request):
             question = last_answered.get_next_by_date_created(category=category)
         except ObjectDoesNotExist:
             deleted = Question.objects.filter(category=category, right_count=MAX_RIGHT_COUNT).delete()
+            deleted_2 = Question.objects.filter(category=category, total_right_count=3).delete()
             sort(category)
             info.total_questions -= deleted[0]
+            info.total_questions -= deleted_2[0]
             category_total_questions = getattr(info, "total_questions_"+category)
             category_total_questions -= deleted[0]
+            category_total_questions -= deleted_2[0]
+            setattr(info, "total_questions_"+category, category_total_questions)
             setattr(info, "last_answered_"+category, 0)
             category_iteration_num = getattr(info, "iteration_num_"+category)
             category_iteration_num += 1
+            setattr(info,"iteration_num_"+category, category_iteration_num)
             info.save()
-            return redirect('home')
+            return redirect(category)
+    category_total_questions = getattr(info,"total_questions_"+category)
     
     if 'last_answered' in locals():
         old_question = last_answered
@@ -120,6 +127,7 @@ def answer(request):
         else:
             question.wrong_count += 1
             question.total_wrong_count += 1
+            question.right_count = 0
             messages.warning(request,
                     "The correct answer was {}: {}. but you selected {}. Good luck for this one."
                     .format(answer_num,answer,answered_num))
@@ -132,7 +140,8 @@ def answer(request):
             'title':'answer',
             'question': question,
             'old_question': old_question,
-            'info': info
+            'info': info,
+            'category_total_questions':category_total_questions,
             }
 
     return render(request,template,context)
