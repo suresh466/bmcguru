@@ -42,7 +42,7 @@ def question_add(request):
 
 def sort(category):
     for wrong_count in reversed(range(0,MAX_WRONG_COUNT+1)):
-        queryset = Question.objects.filter(category=category,wrong_count=wrong_count)
+        queryset = Question.objects.filter(category=category,wrong_count=wrong_count).order_by("question_num")
         for query in queryset:
             query.date_created=timezone.now()
             query.save()
